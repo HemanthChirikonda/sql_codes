@@ -285,7 +285,7 @@ update student set age = 11;
 
 -- update the phonenumber of jack 
 
-update  set phonenumber = 1009887766 where id = 4;
+update  student set phonenumber = 1009887766 where id = 4;
 
  set SQL_SAFE_UPDATES = 1;
  
@@ -302,4 +302,197 @@ select * from student where firstname like '%r';
 select * from student where firstname like '%r%'; 
 
 select * from student where phonenumber like '%6'; 
+
+use pnt_db;
+
+create table product(
+id int primary key, 
+name varchar(20),
+price double(5,2), 
+rating float(4,2)
+);
+
+select * from product;
+
+insert into product (id, name, price, rating)
+value(1, 'tv', 100.00, 4.20),
+(2, 'remote', 20.00, 3.2),
+(3, 'laptop', 359.99, 2.15),
+(4, 'phone', 599.99, 4.65),
+(5, 'Box', 180.10, 2.86),
+(6, 'Tab', 99.99, 3.35),
+(7, 'Motor', 87.99, 3.35),
+(8, 'Cup', 3.99, 2.87),
+(9, 'plate', 10.99, 4.56),
+(10, 'Pellow', 20.99, 3.56),
+(11, 'Toy Car', 399.99, 4.99),
+(12, 'pen', 1.99, 2.99),
+(13, 'Craft Cart', 999.99, 4.98);
+
+-- SUM, AVG, MIN, MAX, COUNT 
+
+select MAX(price) as max_price from product;
+
+select AVG(rating) as avg_rating from product;
+
+select MIN(price) as min_price from product;
+
+select sum(price) as sum_of_products from product;
+
+select count(id) as count_of_products from product;
+
+
+insert into product(id, name, price, rating)
+value(14, 'tv', 200.99, 4.1),
+(15, 'tv', 599.99, 2.8),
+(16, 'tv', 349.99, 3.8),
+(17, 'tv', 249.99, 4.56); 
+
+select * from product;
+
+-- Find the no of tvs, total_cost, avg_rating, maxprice, minprice, max_rating, min_rating
+
+select count(name) as no_of_tvs, 
+sum(price) as total_cost, 
+avg(rating) as avg_rating, 
+max(price) as max_price, 
+min(price) as min_price,
+max(rating) as max_rating, 
+min(rating) as min_rating   
+from product where name = 'tv';
+
+
+
+-- Multiplicity
+
+-- 1:1 -> one to one 
+-- 1:N or N: 1 -> one to Many or Many to one
+-- N:N -> Many to Many 
+
+
+create table citizen(
+id int primary key, 
+firstname varchar(20) not null,
+lastname varchar(20), 
+phonenumber bigint unique, 
+email varchar(35) not null unique, 
+address varchar(20) default 'VA',
+age int(2) 
+);
+
+insert into citizen(id, firstname, lastname, phonenumber, email, address, age)
+value(1, 'ana', 'aa', 1234567890, 'ana@gmail.com', 'PA', 32);
+
+insert into citizen(id, firstname, lastname, phonenumber, email)
+value(2, 'jim', 'jj', 2234567890, 'jim@gmail.com');
+
+insert into citizen(id, firstname, lastname, phonenumber, email, age)
+value(3, 'roy', 'rr',776655443399, 'roy@gmail.com', 25);
+
+insert into citizen(id, firstname, lastname, phonenumber, email, address, age)
+value(4, 'jack', 'rome', 0987612345, 'rome@gmail.com', 'NA', 21),
+(5, 'Rose', 'jonson', 1234554321, 'jonson@gmail.com', 'AZ', 31),
+(6, 'Kimber', 'roder', 0987667890, 'kimber@gmail.com', 'NY', 26),
+(7, 'lilly', 'little', 2345665432, 'lilly@gmail.com', 'MA', 19),
+(8, 'john', 'wick', 3456776543, 'john@gmail.com', 'OH', 34),
+(9, 'santa', 's', 4567887654, 'santa@gmail.com', 'NC', 43),
+(10, 'omar', 'oling', 5678998765, 'omar@gmail.com', 'MA', 23),
+(11, 'bunny', 'butter', 6789009876, 'bunny@gmail.com', 'NY', 28);
+
+delete from citizen where id = 2;
+
+select * from citizen;
+
+create table ssn_table(
+ssn_id int primary key, 
+ssn_value varchar(10), 
+citizenId int unique not null, 
+foreign key(citizenId) references citizen(id)
+);
+
+insert into ssn_table(ssn_id, ssn_value, citizenId)
+value(3, '987654321', 11);
+
+select* from ssn_table;
+
+create table cars(
+car_id int primary key, 
+car_name varchar(20), 
+car_model varchar(20), 
+ownerId int, 
+foreign key(ownerId) references citizen(id)
+);
+
+insert into cars(car_id, car_name, car_model, ownerId)
+value(1, 'Toyota', 'Camry', 1);
+
+insert into cars(car_id, car_name, car_model, ownerId)
+value(2, 'Lexus', 'ES 350', 10),
+(3, 'Mazda', 'CX 50', 1),
+(4, 'Honda ', 'CRV', 3),
+(5, 'Volvo', 'XC 60', 10)
+;
+
+insert into cars(car_id, car_name, car_model)
+value(6, 'Ford', 'Explorer' ),
+(7, 'BMW', 'SLC');
+
+
+select * from cars;
+
+
+create  table orders (
+id int primary key, 
+total double, 
+invoice_number varchar(20), 
+order_date date, 
+customer_id int, 
+foreign key(customer_id) references citizen(id)
+);
+
+
+create table products_orders(
+id int primary key, 
+productId int not null,
+orderId int not null, 
+foreign key(productId) references product(id),
+foreign key(orderId) references orders(id)
+);
+
+
+insert into orders(id, total, invoice_number, order_date, customer_id) 
+value (1, 120.25, 'ABC124', '2025-01-12', 6);
+
+
+insert into orders(id, total, invoice_number, order_date, customer_id) 
+value (2, 599.99, 'BCD345', '2025-01-25', 3),
+(3, 249.99, 'CDF456', '2025-01-31', 8),
+(4, 86.99, 'DEF768', '2025-02-01', 5),
+(5, 29.99, 'EFG098', '2025-01-02', 11),
+(6, 345.99, 'FGH123', '2025-01-05', 9);
+
+select * from orders;
+select * from product;
+
+insert into products_orders(id, productId, orderId)
+value(1, 1, 1),
+(2, 2, 1),
+(3, 4, 2),
+(4, 7, 3),
+(5, 6, 3), 
+(6, 7, 4),
+(7, 12, 4);
+
+select * from products_orders;
+
+
+-- student2 -> many to one -> Teacher 
+-- student2 -> many to many -> course 
+
+
+
+
+
+
+
 
