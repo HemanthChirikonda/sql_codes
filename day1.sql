@@ -485,14 +485,181 @@ value(1, 1, 1),
 
 select * from products_orders;
 
+select o.*,p.* from orders o inner join products_orders po on po.orderId = o.id
+inner join product p on po.productId = p.id;
+
 
 -- student2 -> many to one -> Teacher 
 -- student2 -> many to many -> course 
 
 
 
+-- Joins 
+
+-- INNER JOIN 
+-- LEFT JOIN 
+-- RIGHT JOIN 
+-- FULL JOIN 
+-- SELF JOIN 
+
+
+
+select * from citizen;
+
+select * from cars;
+
+select * from citizen  inner join cars on citizen.id = cars.ownerId;
+
+select * from citizen left join  cars on citizen.id = cars.ownerId;
+
+select * from citizen right join  cars on citizen.id = cars.ownerId;
+
+select * from citizen full join  cars ;
+
+select A.* from cars A,  cars B where A.car_name = B.car_name and A.car_id != B.car_id;
+
+select * from cars;
+
+
+insert into cars(car_id, car_name, car_model)
+value(8, 'Lexus', 'RX 450'),
+(9, 'Mazda', 'mazda 6'),
+(10, 'Honda ', 'acord'),
+(11, 'Volvo', 'XC 90' )
+;
+
+
+-- where  => this will filter the data before joining the table. 
+-- having => this will filter the data after joining the table. 
+
+select * from citizen  inner join cars on citizen.id = cars.ownerId;
+
+-- find the people whose age less than 25 and has the car. 
+
+select * from citizen  left join cars on citizen.id = cars.ownerId where citizen.age <=25;
+
+
+select * from citizen  left join cars on citizen.id = cars.ownerId having citizen.age <=25;
 
 
 
 
+-- group by 
+-- groups are rows that have same values into summy rows like sum/svg/count
+-- groups are used to get the summary details. 
 
+select citizen.*, count(cars.car_id) as no_of_cars from citizen  
+left join cars on citizen.id = cars.ownerId 
+group by citizen.id;
+
+
+-- find the people who is atlest 2 car. 
+
+select citizen.*, count(cars.car_id) as no_of_cars from citizen  
+left join cars on citizen.id = cars.ownerId 
+ group by citizen.id having no_of_cars >= 2;
+ 
+ select * from citizen where no_of_cars >= 2; 
+  select * from cars;
+ 
+
+-- sub quries 
+
+ select * from citizen;
+ 
+ -- find the oldest person's details.
+ 
+ select  * from citizen where age =(select max(age) from citizen);
+ 
+
+ -- order by 
+ 
+  select  * from citizen order by age asc;   
+  
+   
+  select  * from citizen order by age desc;  
+  
+  
+  select  * from citizen order by address asc, lastname desc;  
+  
+  
+  
+  -- limit                  limit
+select  * from citizen limit  3;
+--                        offset, limit
+select  * from citizen limit  2,    4;
+    
+   -- by using the limit  find the second oldest person. 
+   
+ select * from  citizen order by age desc limit 1, 1; 
+ 
+ 
+ -- auto_increment
+ 
+ 
+ create table people(
+id int primary key auto_increment, 
+firstname varchar(20) not null,
+lastname varchar(20), 
+phonenumber bigint unique, 
+email varchar(35) not null unique, 
+address varchar(20) default 'VA',
+age int(2) 
+);
+ 
+ insert into people( firstname, lastname, phonenumber, email, address, age)
+value( 'ana', 'aa', 1234567890, 'ana@gmail.com', 'PA', 32);
+
+insert into people( firstname, lastname, phonenumber, email)
+value( 'jim', 'jj', 2234567890, 'jim@gmail.com');
+
+insert into people( firstname, lastname, phonenumber, email, age)
+value( 'roy', 'rr',776655443399, 'roy@gmail.com', 25);
+
+insert into people( firstname, lastname, phonenumber, email, address, age)
+value( 'jack', 'rome', 0987612345, 'rome@gmail.com', 'NA', 21),
+( 'Rose', 'jonson', 1234554321, 'jonson@gmail.com', 'AZ', 31),
+( 'Kimber', 'roder', 0987667890, 'kimber@gmail.com', 'NY', 26),
+( 'lilly', 'little', 2345665432, 'lilly@gmail.com', 'MA', 19),
+( 'john', 'wick', 3456776543, 'john@gmail.com', 'OH', 34),
+( 'santa', 's', 4567887654, 'santa@gmail.com', 'NC', 43),
+( 'omar', 'oling', 5678998765, 'omar@gmail.com', 'MA', 23),
+( 'bunny', 'butter', 6789009876, 'bunny@gmail.com', 'NY', 28);
+
+select * from people;
+
+
+-- ACID
+-- Transactions, the grouping of SQL statements so that they all succeed or fail together, requires
+-- the adherence to 4 properties. These properties are remembered by the name ACID and are
+-- common database terms.
+-- • Atomicity – A transaction must fully succeed, and all changes are made or be fully rolled back
+-- and no changes are made to the database.
+-- • Consistency – Relationships in the database must be valid when a transaction finishes. You can
+-- not have “orphaned reference” in FKs for instance. E.g. if I delete and address from the database
+-- I have to delete all references to that address in the users table for the transaction to complete.
+-- • Isolation – Transaction must run independently of each other. I.e. no transaction should be
+-- dependent of another transaction’s completion in order to complete. How isolated transactions
+-- are from each other is set by the database’s Transaction Level and will be determined based on
+-- the sensitivity of data and the need for rapid, multithreaded transaction processing.
+-- • Durability – Transactions when they commit should persist through catastrophic failure. E.g. a
+-- system crash or power outage.
+
+
+-- Data Normalization:
+-- • Normalization is a tiered structure for designing databases to reduce redundancy of data
+-- storage. This increases efficiency in the database.
+-- • Each level of normalization is called a “normal form”. If no attempt at normalization is made, the
+-- database is said to be in 0 Normal Form.
+-- • There are 3 generally used normal forms in the real world. There are more beyond that that
+-- have been defined; however, these are difficult to implement and rarely have much impact in a
+-- real-world scenario and are therefore more academic.
+-- • 1st Normal Form – Atomic Data (data values stored should be broken down in the smallest
+-- amount of meaningful data possible) and Primary Keys.
+-- • 2nd Normal Form – 1st NF plus no partial dependencies. You can achieve this by having single
+-- column PKs. A partial dependency is a value that can be determined by only accessing one
+-- column in the PKs information.
+-- • 3rd Normal Form – 2nd NF plus no transitive dependencies. A transitive dependency is when one
+-- value can be fully determined by another value in the same record that is not the primary. If
+-- that is the case then the value should be moved to another table the determinating value should
+-- be made a foreign key to that other table.
